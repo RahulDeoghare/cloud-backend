@@ -44,6 +44,7 @@ class AIAnalyticsController {
       time: analyticsData.logData.time, // Use the time as-is from Python
       location: analyticsData.logData.location,
       screenShotPath: analyticsData.logData.screenShotPath || analyticsData.logData.screenshotPath,
+      office_id: analyticsData.logData.office_id || null,
     };
 
     const insertedLog = await databaseService.insertVehicleLog(logData);

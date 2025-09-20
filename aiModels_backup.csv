@@ -1,0 +1,3 @@
+id,name,info,sortName
+1,vehicle in/out,vehicle in or out detection,vehicleInOut
+2,ANPR,ANPR detection,anpr
