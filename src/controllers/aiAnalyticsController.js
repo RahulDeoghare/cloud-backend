@@ -34,20 +34,25 @@ class AIAnalyticsController {
     console.log('Received analytics data:', req.body); // Debug log
     
     const analyticsData = req.body;
-    if (!analyticsData.modelName || !analyticsData.logData || !analyticsData.logData.cameraId) {
+    if (!analyticsData.modelName || !analyticsData.logData || !analyticsData.logData.camera_id) {
       return res.status(400).json({ error: 'Invalid analytics data format' });
     }
 
     const logData = {
-      id: analyticsData.logData.logId || null,
-      camera_id: analyticsData.logData.cameraId,
+      logId: analyticsData.logData.id, // UUID for id (Python sends "id")
+      camera_id: analyticsData.logData.camera_id, // Must be UUID
       eventType: analyticsData.logData.eventType,
-      time: analyticsData.logData.time, // Use the time as-is from Python
+      time: analyticsData.logData.time, // timestamp with time zone
       location: analyticsData.logData.location,
       screenShotPath: analyticsData.logData.screenShotPath || analyticsData.logData.screenshotPath,
-      office_id: analyticsData.logData.office_id || null,
-      device_id: analyticsData.logData.device_id || null,
+      office_id: analyticsData.logData.office_id, // Must be UUID, not null
+      device_id: analyticsData.logData.device_id, // Must be UUID, not null
     };
+
+    // Validate required UUIDs
+    if (!logData.office_id || !logData.device_id || !logData.logId) {
+      return res.status(400).json({ error: 'office_id, device_id and id are required' });
+    }
 
     const insertedLog = await databaseService.insertVehicleLog(logData);
     res.json({ status: 'success', logId: insertedLog.id });
@@ -65,7 +70,7 @@ class AIAnalyticsController {
   async getVehicleLogs(req, res) {
   try {
     const filters = {
-      cameraId: req.query.cameraId,
+      cameraId: req.query.camera_id,
       startDate: req.query.startDate,
       endDate: req.query.endDate,
       limit: req.query.limit ? parseInt(req.query.limit) : 100
