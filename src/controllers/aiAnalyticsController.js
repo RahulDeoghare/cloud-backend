@@ -39,12 +39,14 @@ class AIAnalyticsController {
     }
 
     const logData = {
-      cameraId: analyticsData.logData.cameraId,
+      id: analyticsData.logData.logId || null,
+      camera_id: analyticsData.logData.cameraId,
       eventType: analyticsData.logData.eventType,
       time: analyticsData.logData.time, // Use the time as-is from Python
       location: analyticsData.logData.location,
       screenShotPath: analyticsData.logData.screenShotPath || analyticsData.logData.screenshotPath,
       office_id: analyticsData.logData.office_id || null,
+      device_id: analyticsData.logData.device_id || null,
     };
 
     const insertedLog = await databaseService.insertVehicleLog(logData);
